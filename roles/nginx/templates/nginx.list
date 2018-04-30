@@ -1,0 +1,13 @@
+{% for host in groups['test_machine'] %}
+  {% if hostvars[host]["ansible_distribution_release"] == "stretch" %}
+    {% set codename = "stretch" %}
+  {% elif hostvars[host]["ansible_distribution_release"] == "jessie" %}
+    {% set codename = "jessie" %}
+  {%elif hostvars[host]['ansible_distribution_release'] == "xenial" %}
+    {% set codename = "xenial" %}
+  {%elif hostvars[host]['ansible_distribution_release'] == "trusty" %}
+    {% set codename = "trusty" %}
+  {% endif %}
+  deb http://nginx.org/packages/mainline/debian/ {{ codename }} nginx
+  deb-src http://nginx.org/packages/debian/ {{ codename }} nginx
+{% endfor %}
