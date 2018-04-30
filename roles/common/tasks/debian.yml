@@ -1,0 +1,5 @@
+- name: include variables  
+  include_vars: '../vars/debian.yml'
+- name: install common tools 
+  apt: name="{{ item }}"  state=present
+  with_items: "{{ common_tools }}"
