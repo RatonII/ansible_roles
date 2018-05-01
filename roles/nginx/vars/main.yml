@@ -1,1 +1,8 @@
-
+main_template_worker_processes: auto
+main_template_error_level: warn
+main_template_worker_connections: 1024
+main_template_user: nginx
+http_template_enable: true
+stream_template_enable: false
+sites: ["/etc/nginx/sites-available","/etc/nginx/sites-enabled"]
+http_template_keepalive_timeout: 60
