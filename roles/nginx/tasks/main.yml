@@ -14,3 +14,8 @@
   notify: restart nginx
 - name: generate dhparam cipher file
   command: openssl dhparam -out /etc/ssl/private/dhparam.pem 2048
+- name: generate vhost config
+  template: src=../templates/vhost.conf.j2   dest=../etc/nginx/sites-available/{{ item }}
+  with_items: "{{ servers }}"
+  notify: restart nginx
+    

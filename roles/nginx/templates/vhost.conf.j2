@@ -1,0 +1,119 @@
+{% for server_name in servers %}
+server {
+    listen       {{ http_port }};
+    server_name  {{ server_name }} www.{{ server_name }};
+{% if http_port == 443  %}
+    return 301 https://$server_name$request_uri;
+{% endif %}
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+{% if http_port == 80 %}
+    location / {
+        root   {{ root_path }}/{{ server_name }};
+        index  {{ index }};
+    }
+    
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+ {% if proxy_pass %}
+    location ~ \.php$ {
+       proxy_pass   {{ proxy_pass }};
+    }
+{% endif %}
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+ {% if fastcgi_pass %}
+    location ~ \.php$ {
+        root           html;
+        fastcgi_pass   {{ fastcgi_pass }};
+        fastcgi_index  {{ fastcgi_index }};
+        fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+{% endif %}
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+    access_log  /var/log/nginx/{{server_name}}/access.log  main;
+    error_log  /var/log/nginx/{{server_name}}/error.log  warn;
+{% endif %}    
+}
+{% if http_port == 443 %}
+server {
+    listen       {{ http_port }} ssl http2;
+    server_name  {{ server_name }} ;
+    return 301 https://www.{{ server_name }}$request_uri;
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+    }
+ server{
+    listen 443 {{ ssl_on }}  http2;
+    server_name www.{{ server_name }};
+    ssl_certificate   /etc/nginx/ssl/www.{{ server_name }}.crt;
+    ssl_certificate_key /etc/nginx/ssl/www.{{ server_name }}.key;
+    ssl_protocols  TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    
+    ssl_dhparam /etc/nginx/dhparam.pem; # openssl dhparam -out /etc/nginx/dhparam.pem 4096
+    resolver $DNS-IP-1 $DNS-IP-2 valid=300s;
+    resolver_timeout 5s;  
+    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384; 
+    ssl_ecdh_curve secp384r1;
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Robots-Tag none;   
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";    
+    location / {
+        root   {{ root_path }}/{{ server_name }};
+        index  {{ index }};
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+ {% if proxy_pass %}   
+    location ~ \.php$ {
+       proxy_pass   {{ proxy_pass }};
+    }
+{% endif %}
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+ {% if fastcgi_pass %}    
+    location ~ \.php$ {
+        root           html;
+        fastcgi_pass   {{ fastcgi_pass }};
+        fastcgi_index  {{ fastcgi_index }};
+        fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+{% endif %}
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+    access_log  /var/log/nginx/{{server_name}}/access.log  main;
+    error_log  /var/log/nginx/{{server_name}}/error.log  warn;
+}
+{% endif %}
+{% endfor %}
