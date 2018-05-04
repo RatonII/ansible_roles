@@ -1,4 +1,4 @@
 - name: copy nginx repo
-  copy: src=../files/nginx.repo  dest=/etc/yum.repos.d/nginx.repo  owner=root mode=0644 
+  copy: src=files/nginx.repo  dest=/etc/yum.repos.d/nginx.repo  owner=root mode=0644 
 - name: install nginx 
   yum: name=nginx  state=present
