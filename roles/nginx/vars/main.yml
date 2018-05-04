@@ -6,11 +6,11 @@ http_template_enable: true
 stream_template_enable: false
 sites: ["/etc/nginx/sites-available","/etc/nginx/sites-enabled"]
 http_template_keepalive_timeout: 60
-servers: ["test.com","test2.com"]
 http_port: 80
 root_path: /var/www
 index: "index.html index.htm  index.php"
 proxy_pass: false
 fastcgi_pass: false
+        
 
 

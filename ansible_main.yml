@@ -2,4 +2,11 @@
   roles:
     - common
     - cis
-    - nginx  
+    - dhparm  
+    - role: nginx
+      vars:
+        hostname: test1.com
+    - role: nginx
+      vars:
+        hostname: test2.com
+          

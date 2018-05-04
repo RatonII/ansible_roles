@@ -1,0 +1,6 @@
+- name: create /etc/ssl/private folder
+  file: name=/etc/ssl/private state=directory
+- name: generate dhparam cipher file
+  shell: test -e /etc/ssl/private/dhparam.pem || openssl dhparam -out /etc/ssl/private/dhparam.pem 2048
+  run_once: true
+

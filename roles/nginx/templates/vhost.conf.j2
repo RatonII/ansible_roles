@@ -1,7 +1,6 @@
-{% for server_name in servers %}
 server {
     listen       {{ http_port }};
-    server_name  {{ server_name }} www.{{ server_name }};
+    server_name  {{ hostname }} www.{{ hostname }};
 {% if http_port == 443  %}
     return 301 https://$server_name$request_uri;
 {% endif %}
@@ -9,7 +8,7 @@ server {
     #access_log  /var/log/nginx/host.access.log  main;
 {% if http_port == 80 %}
     location / {
-        root   {{ root_path }}/{{ server_name }};
+        root   {{ root_path }}/{{ hostname }};
         index  {{ index }};
     }
     
@@ -45,27 +44,27 @@ server {
     #location ~ /\.ht {
     #    deny  all;
     #}
-    access_log  /var/log/nginx/{{server_name}}/access.log  main;
-    error_log  /var/log/nginx/{{server_name}}/error.log  warn;
+    access_log  /var/log/nginx/{{ hostname }}/access.log  main;
+    error_log  /var/log/nginx/{{ hostname }}/error.log  warn;
 {% endif %}    
 }
 {% if http_port == 443 %}
 server {
     listen       {{ http_port }} ssl http2;
-    server_name  {{ server_name }} ;
-    return 301 https://www.{{ server_name }}$request_uri;
+    server_name  {{ hostname }} ;
+    return 301 https://www.{{ hostname }}$request_uri;
     #charset koi8-r;
     #access_log  /var/log/nginx/host.access.log  main;
     }
  server{
-    listen 443 {{ ssl_on }}  http2;
-    server_name www.{{ server_name }};
-    ssl_certificate   /etc/nginx/ssl/www.{{ server_name }}.crt;
-    ssl_certificate_key /etc/nginx/ssl/www.{{ server_name }}.key;
+    listen 443 ssl  http2;
+    server_name www.{{ hostname }};
+    ssl_certificate   /etc/nginx/ssl/www.{{ hostname }}.crt;
+    ssl_certificate_hostname /etc/nginx/ssl/www.{{ hostname }}.hostname;
     ssl_protocols  TLSv1.1 TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
     
-    ssl_dhparam /etc/nginx/dhparam.pem; # openssl dhparam -out /etc/nginx/dhparam.pem 4096
+    ssl_dhparam /etc/nginx/dhparam.pem; # openssl dhparam -out /etc/nginx/dhparam.pem 2048
     resolver $DNS-IP-1 $DNS-IP-2 valid=300s;
     resolver_timeout 5s;  
     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384; 
@@ -76,7 +75,7 @@ server {
     add_header X-Robots-Tag none;   
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";    
     location / {
-        root   {{ root_path }}/{{ server_name }};
+        root   {{ root_path }}/{{ hostname }};
         index  {{ index }};
     }
 
@@ -112,8 +111,7 @@ server {
     #location ~ /\.ht {
     #    deny  all;
     #}
-    access_log  /var/log/nginx/{{server_name}}/access.log  main;
-    error_log  /var/log/nginx/{{server_name}}/error.log  warn;
+    access_log  /var/log/nginx/{{ hostname }}/access.log  main;
+    error_log  /var/log/nginx/{{ hostname }}/error.log  warn;
 }
 {% endif %}
-{% endfor %}

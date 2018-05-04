@@ -4,20 +4,17 @@
 - import_tasks: debian.yml
   when: ansible_os_family == 'Debian'
 
-- name: ensure nginx is running
-  service: name=nginx state=started enabled=yes
 - name: create sites-enabled directory and sites-available
   file:  name={{ item }} state=directory
   with_items: "{{ sites }}"
 - name: modify config nginx
   template:  src=../templates/nginx.conf.j2  dest=/etc/nginx/nginx.conf
   notify: restart nginx
-- name: create /etc/ssl/private folder
-  file: name=/etc/ssl/private state=directory
-- name: generate dhparam cipher file
-  command: openssl dhparam -out /etc/ssl/private/dhparam.pem 2048
 - name: generate vhost config
-  template: src=../templates/vhost.conf.j2   dest=/etc/nginx/sites-available/{{ item }}
-  with_items: "{{ servers }}"
+  template: src=../templates/vhost.conf.j2   dest=/etc/nginx/sites-available/{{ hostname }}.conf
   notify: restart nginx
-    
+- name: create logs directory
+  file: name=/var/log/nginx/{{ hostname }} state=directory  
+- name: create links to enable vhost
+  file: src=/etc/nginx/sites-available/{{ hostname }}.conf  dest=/etc/nginx/sites-enabled/{{ hostname }}.conf state=link
+  notify: restart nginx  
