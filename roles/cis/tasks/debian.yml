@@ -1,0 +1,4 @@
+- name: mount /tmp endpoint
+  mount: path=/tmp  fstype=tmpfs  src=tmpfs  opts='rw,nosuid,nodev,noexec,relatime' state=mounted
+- name: upgrade system
+  apt: upgrade=dist  update_cache=yes

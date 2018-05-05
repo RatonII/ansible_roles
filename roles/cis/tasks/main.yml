@@ -3,3 +3,10 @@
   when: ansible_os_family == 'RedHat'
 - import_tasks: debian.yml
   when: ansible_os_family == 'Debian'
+- name: disable cramfs filesystem
+  copy: src=files/CIS.conf  dest=/etc/modprobe.d/CIS.conf owner=root mode=0644
+- name: mount /var/tmp endpoint
+  mount: path=/var/tmp  fstype=tmpfs  src=tmpfs  opts='rw,nosuid,nodev,noexec,relatime' state=mounted
+- name: mount /dev/shm endpoint
+  mount: path=/dev/shm  fstype=tmpfs  src=tmpfs  opts='rw,nosuid,nodev,noexec,relatime' state=mounted
+

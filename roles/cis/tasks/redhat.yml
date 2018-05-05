@@ -1,6 +1,6 @@
-- name: disable cramfs filesystem
-  copy: src=files/CIS.conf  dest=/etc/modprobe.d/CIS.conf owner=root mode=0644
-- name: mmodify tmp settings
+- name: modify tmp settings
   lineinfile: path=/etc/systemd/system/local-fs.target.wants/tmp.mount regexp='^Options=mode=1777' insertafter='Type=tmpfs' line='Options=mode=1777,strictatime,noexec,nodev,nosuid'
 - name: enable tmp service
   systemd: name=tmp.mount state=started enabled=yes masked=no
+- name: upgrade the system
+  yum:  name='*' state=latest   
