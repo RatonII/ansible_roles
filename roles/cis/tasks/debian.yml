@@ -2,3 +2,11 @@
   mount: path=/tmp  fstype=tmpfs  src=tmpfs  opts='rw,nosuid,nodev,noexec,relatime' state=mounted
 - name: upgrade system
   apt: upgrade=dist  update_cache=yes
+- name: install AIDE instrusion detection
+  apt:  name=aide,aide-common state=latest
+- name: copy AIDE config
+  copy: src=files/aide.conf  dest=/etc/aide/aide.conf
+  notify: start aide debian
+- name: add cron for AIDE
+  cron:  name='AIDE scan file integrity' minute="0" hour="5" job="/usr/bin/aide --config /etc/aide/aide.conf --check"
+

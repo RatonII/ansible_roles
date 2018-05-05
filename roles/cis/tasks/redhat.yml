@@ -3,4 +3,11 @@
 - name: enable tmp service
   systemd: name=tmp.mount state=started enabled=yes masked=no
 - name: upgrade the system
-  yum:  name='*' state=latest   
+  yum:  name='*' state=latest
+- name: install AIDE  instrusion detection
+  yum: name=aide state=latest
+- name: copy AIDE config
+  copy: src=files/aide.conf  dest=/etc/aide/aide.conf
+  notify: start aide redhat
+- name: add cron for AIDE
+  cron:  name='AIDE scan file integrity' minute="0" hour="5" job="/usr/sbin/aide --check"  

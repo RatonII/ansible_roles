@@ -1,0 +1,5 @@
+- name: start aide debian 
+  command: aideinit
+- name: start aide redhat
+  command:  aide --init  
+
