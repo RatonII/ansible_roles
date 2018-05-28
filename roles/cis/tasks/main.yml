@@ -9,4 +9,16 @@
   mount: path=/var/tmp  fstype=tmpfs  src=tmpfs  opts='rw,nosuid,nodev,noexec,relatime' state=mounted
 - name: mount /dev/shm endpoint
   mount: path=/dev/shm  fstype=tmpfs  src=tmpfs  opts='rw,nosuid,nodev,noexec,relatime' state=mounted
+- name: set up the right permissions of grub
+  file: path=/boot/grub/grub.cfg owner=root group=root mode=0400
+- name: add hard limit for core dump  
+  lineinfile: path=/etc/security/limits.conf line='* hard core 0'
+- name: add hard limit for core dump
+  lineinfile: path=/etc/sysctl.conf  line='fs.suid_dumpable = 0'
+- name: sysctl network settings
+  template: src=templates/sysctl.conf.j2  dest=/etc/sysctl.conf
+- name: install auditd
+  apt: name=auditd state=latest
+- name: enable auditd
+  service: name=auditd state=started enabled=yes
 

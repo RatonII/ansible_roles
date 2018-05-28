@@ -9,4 +9,5 @@
   notify: start aide debian
 - name: add cron for AIDE
   cron:  name='AIDE scan file integrity' minute="0" hour="5" job="/usr/bin/aide --config /etc/aide/aide.conf --check"
-
+- name: auditd config
+  template: src=templates/audit.rules.j2  dest=/etc/audit/audit.rules  

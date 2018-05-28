@@ -10,4 +10,8 @@
   copy: src=files/aide.conf  dest=/etc/aide/aide.conf
   notify: start aide redhat
 - name: add cron for AIDE
-  cron:  name='AIDE scan file integrity' minute="0" hour="5" job="/usr/sbin/aide --check"  
+  cron:  name='AIDE scan file integrity' minute="0" hour="5" job="/usr/sbin/aide --check"
+- name: set up right permissions grub user.cfg
+  file: path=/boot/grub2/user.cfg owner=root group=root mode=0600
+- name: auditd config
+  template: src=templates/audit.rules.j2_r  dest=/etc/audit/audit.rules  
